@@ -1,0 +1,648 @@
+/**
+ * globals.css
+ *
+ * The single source of truth for the AgroBid Pakistan design system.
+ *
+ * Structure:
+ *  1. Tailwind + plugin imports
+ *  2. Tailwind v4 @theme inline — maps CSS vars to Tailwind utilities
+ *  3. :root — light mode design tokens (colors, radius, shadow, motion, typography, spacing)
+ *  4. .dark — dark mode overrides
+ *  5. @layer base — global element resets and accessibility defaults
+ *  6. @layer utilities — custom utility classes not covered by Tailwind
+ */
+
+/* ─────────────────────────── 1. IMPORTS ─────────────────────────── */
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/* Enable class-based dark mode (controlled by next-themes) */
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────── 2. @THEME INLINE ─────────────────────────── */
+/*
+ * Maps CSS variables to Tailwind utility classes.
+ * e.g. `--color-primary` → `bg-primary`, `text-primary`, `border-primary`
+ */
+@theme inline {
+  /* ── Fonts ── */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-heading: var(--font-plus-jakarta-sans);
+
+  /* ── Brand Colors ── */
+  --color-brand-50: var(--brand-50);
+  --color-brand-100: var(--brand-100);
+  --color-brand-200: var(--brand-200);
+  --color-brand-300: var(--brand-300);
+  --color-brand-400: var(--brand-400);
+  --color-brand-500: var(--brand-500);
+  --color-brand-600: var(--brand-600);
+  --color-brand-700: var(--brand-700);
+  --color-brand-800: var(--brand-800);
+  --color-brand-900: var(--brand-900);
+  --color-brand-950: var(--brand-950);
+
+  /* ── Amber / Harvest Colors ── */
+  --color-harvest-50: var(--harvest-50);
+  --color-harvest-100: var(--harvest-100);
+  --color-harvest-200: var(--harvest-200);
+  --color-harvest-300: var(--harvest-300);
+  --color-harvest-400: var(--harvest-400);
+  --color-harvest-500: var(--harvest-500);
+  --color-harvest-600: var(--harvest-600);
+  --color-harvest-700: var(--harvest-700);
+  --color-harvest-800: var(--harvest-800);
+  --color-harvest-900: var(--harvest-900);
+  --color-harvest-950: var(--harvest-950);
+
+  /* ── Semantic (shadcn-compatible) ── */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ── Chart Colors ── */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* ── Sidebar (shadcn sidebar component) ── */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* ── Border Radius Tokens ── */
+  --radius-none: 0px;
+  --radius-xs: calc(var(--radius) * 0.4);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.4);
+  --radius-4xl: calc(var(--radius) * 3.2);
+  --radius-full: 9999px;
+
+  /* ── Shadow Tokens ── */
+  --shadow-xs: var(--shadow-xs-raw);
+  --shadow-sm: var(--shadow-sm-raw);
+  --shadow-md: var(--shadow-md-raw);
+  --shadow-lg: var(--shadow-lg-raw);
+  --shadow-xl: var(--shadow-xl-raw);
+  --shadow-2xl: var(--shadow-2xl-raw);
+  --shadow-glow-primary: var(--shadow-glow-primary-raw);
+  --shadow-glow-harvest: var(--shadow-glow-harvest-raw);
+  --shadow-inner-sm: var(--shadow-inner-sm-raw);
+
+  /* ── Animation Duration Tokens ── */
+  --duration-instant: 0ms;
+  --duration-fastest: 75ms;
+  --duration-faster: 100ms;
+  --duration-fast: 150ms;
+  --duration-normal: 200ms;
+  --duration-moderate: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 700ms;
+  --duration-slowest: 1000ms;
+
+  /* ── Animation Easing Tokens ── */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+
+  /* ── Spacing Scale (semantic) ── */
+  --spacing-page-x: var(--page-padding-x);
+  --spacing-section-y: var(--section-padding-y);
+}
+
+/* ─────────────────────────── 3. LIGHT MODE TOKENS ─────────────────────────── */
+:root {
+  /* ──────────────────────────────────────────────────────
+     BRAND COLOR PALETTE — Agricultural Green
+     Inspired by fertile fields and sustainable farming
+  ────────────────────────────────────────────────────── */
+  --brand-50: oklch(0.972 0.044 150.5);
+  --brand-100: oklch(0.938 0.083 151.2);
+  --brand-200: oklch(0.880 0.131 152.1);
+  --brand-300: oklch(0.801 0.172 153.4);
+  --brand-400: oklch(0.702 0.187 152.8);
+  --brand-500: oklch(0.612 0.178 151.7);  /* Primary brand green */
+  --brand-600: oklch(0.524 0.163 150.9);
+  --brand-700: oklch(0.442 0.141 150.1);
+  --brand-800: oklch(0.368 0.113 149.5);
+  --brand-900: oklch(0.305 0.088 148.9);
+  --brand-950: oklch(0.218 0.065 148.2);
+
+  /* ──────────────────────────────────────────────────────
+     HARVEST COLOR PALETTE — Amber / Golden
+     Represents harvest season, golden crops, and prosperity
+  ────────────────────────────────────────────────────── */
+  --harvest-50: oklch(0.987 0.034 88.4);
+  --harvest-100: oklch(0.972 0.065 88.9);
+  --harvest-200: oklch(0.947 0.118 89.6);
+  --harvest-300: oklch(0.912 0.163 88.8);
+  --harvest-400: oklch(0.864 0.192 84.5);
+  --harvest-500: oklch(0.802 0.189 79.2);  /* Primary harvest amber */
+  --harvest-600: oklch(0.724 0.173 72.8);
+  --harvest-700: oklch(0.633 0.148 65.4);
+  --harvest-800: oklch(0.534 0.118 58.9);
+  --harvest-900: oklch(0.442 0.092 53.7);
+  --harvest-950: oklch(0.298 0.066 49.2);
+
+  /* ──────────────────────────────────────────────────────
+     SEMANTIC COLOR TOKENS — Light Mode
+     These are what components use directly
+  ────────────────────────────────────────────────────── */
+  --background: oklch(0.992 0.004 150.5);
+  --foreground: oklch(0.148 0.022 150.1);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.148 0.022 150.1);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.148 0.022 150.1);
+
+  /* Primary = Brand Green */
+  --primary: oklch(0.524 0.163 150.9);
+  --primary-foreground: oklch(0.992 0.004 150.5);
+
+  /* Secondary = Light harvest tint */
+  --secondary: oklch(0.964 0.028 88.9);
+  --secondary-foreground: oklch(0.442 0.092 53.7);
+
+  /* Muted = Warm gray with green tint */
+  --muted: oklch(0.962 0.008 150.5);
+  --muted-foreground: oklch(0.498 0.024 150.2);
+
+  /* Accent = Harvest amber */
+  --accent: oklch(0.947 0.118 89.6);
+  --accent-foreground: oklch(0.298 0.066 49.2);
+
+  /* Status colors */
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --success: oklch(0.527 0.158 151.8);
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(0.802 0.189 79.2);
+  --warning-foreground: oklch(0.215 0.044 53.7);
+  --info: oklch(0.577 0.189 243.6);
+  --info-foreground: oklch(0.985 0 0);
+
+  /* Borders & inputs */
+  --border: oklch(0.892 0.016 150.2);
+  --input: oklch(0.892 0.016 150.2);
+  --ring: oklch(0.524 0.163 150.9);
+
+  /* Chart palette (data visualization) */
+  --chart-1: oklch(0.612 0.178 151.7);
+  --chart-2: oklch(0.802 0.189 79.2);
+  --chart-3: oklch(0.577 0.189 243.6);
+  --chart-4: oklch(0.577 0.245 27.325);
+  --chart-5: oklch(0.632 0.167 308.8);
+
+  /* Sidebar */
+  --sidebar: oklch(0.978 0.006 150.5);
+  --sidebar-foreground: oklch(0.148 0.022 150.1);
+  --sidebar-primary: oklch(0.524 0.163 150.9);
+  --sidebar-primary-foreground: oklch(0.992 0.004 150.5);
+  --sidebar-accent: oklch(0.947 0.118 89.6);
+  --sidebar-accent-foreground: oklch(0.298 0.066 49.2);
+  --sidebar-border: oklch(0.892 0.016 150.2);
+  --sidebar-ring: oklch(0.524 0.163 150.9);
+
+  /* ──────────────────────────────────────────────────────
+     BORDER RADIUS BASE
+  ────────────────────────────────────────────────────── */
+  --radius: 0.625rem; /* 10px — base radius unit, all others scale from this */
+
+  /* ──────────────────────────────────────────────────────
+     SHADOW TOKENS — Light Mode
+  ────────────────────────────────────────────────────── */
+  --shadow-xs-raw: 0 1px 2px 0 oklch(0 0 0 / 0.05);
+  --shadow-sm-raw: 0 1px 3px 0 oklch(0 0 0 / 0.08), 0 1px 2px -1px oklch(0 0 0 / 0.06);
+  --shadow-md-raw: 0 4px 6px -1px oklch(0 0 0 / 0.07), 0 2px 4px -2px oklch(0 0 0 / 0.06);
+  --shadow-lg-raw: 0 10px 15px -3px oklch(0 0 0 / 0.07), 0 4px 6px -4px oklch(0 0 0 / 0.05);
+  --shadow-xl-raw: 0 20px 25px -5px oklch(0 0 0 / 0.07), 0 8px 10px -6px oklch(0 0 0 / 0.05);
+  --shadow-2xl-raw: 0 25px 50px -12px oklch(0 0 0 / 0.15);
+  --shadow-glow-primary-raw: 0 0 20px 4px oklch(0.524 0.163 150.9 / 0.25);
+  --shadow-glow-harvest-raw: 0 0 20px 4px oklch(0.802 0.189 79.2 / 0.30);
+  --shadow-inner-sm-raw: inset 0 2px 4px 0 oklch(0 0 0 / 0.06);
+
+  /* ──────────────────────────────────────────────────────
+     LAYOUT SPACING TOKENS
+  ────────────────────────────────────────────────────── */
+  --page-padding-x: clamp(1rem, 5vw, 6rem);
+  --section-padding-y: clamp(3rem, 8vw, 7rem);
+  --header-height: 4rem;        /* 64px */
+  --footer-height: auto;
+
+  /* ──────────────────────────────────────────────────────
+     CONTAINER WIDTHS
+  ────────────────────────────────────────────────────── */
+  --container-xs: 480px;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1440px;
+  --container-3xl: 1600px;
+}
+
+/* ─────────────────────────── 4. DARK MODE OVERRIDES ─────────────────────────── */
+.dark {
+  /* ── Semantic Overrides ── */
+  --background: oklch(0.134 0.018 150.1);
+  --foreground: oklch(0.962 0.008 150.5);
+
+  --card: oklch(0.175 0.020 150.2);
+  --card-foreground: oklch(0.962 0.008 150.5);
+
+  --popover: oklch(0.185 0.022 150.2);
+  --popover-foreground: oklch(0.962 0.008 150.5);
+
+  /* Primary = Lighter brand green for contrast on dark */
+  --primary: oklch(0.701 0.187 152.8);
+  --primary-foreground: oklch(0.134 0.018 150.1);
+
+  /* Secondary = Deep harvest on dark */
+  --secondary: oklch(0.242 0.040 89.2);
+  --secondary-foreground: oklch(0.912 0.163 88.8);
+
+  --muted: oklch(0.218 0.022 150.1);
+  --muted-foreground: oklch(0.628 0.030 150.2);
+
+  --accent: oklch(0.298 0.066 49.2);
+  --accent-foreground: oklch(0.947 0.118 89.6);
+
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --success: oklch(0.701 0.187 152.8);
+  --success-foreground: oklch(0.134 0.018 150.1);
+  --warning: oklch(0.864 0.192 84.5);
+  --warning-foreground: oklch(0.215 0.044 53.7);
+  --info: oklch(0.632 0.198 243.6);
+  --info-foreground: oklch(0.985 0 0);
+
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.701 0.187 152.8);
+
+  /* Chart palette — brightened for dark bg */
+  --chart-1: oklch(0.701 0.187 152.8);
+  --chart-2: oklch(0.864 0.192 84.5);
+  --chart-3: oklch(0.632 0.198 243.6);
+  --chart-4: oklch(0.704 0.191 22.216);
+  --chart-5: oklch(0.720 0.178 308.8);
+
+  /* Sidebar */
+  --sidebar: oklch(0.175 0.020 150.2);
+  --sidebar-foreground: oklch(0.962 0.008 150.5);
+  --sidebar-primary: oklch(0.701 0.187 152.8);
+  --sidebar-primary-foreground: oklch(0.134 0.018 150.1);
+  --sidebar-accent: oklch(0.298 0.066 49.2);
+  --sidebar-accent-foreground: oklch(0.947 0.118 89.6);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.701 0.187 152.8);
+
+  /* ── Shadow Tokens — Dark Mode ── */
+  --shadow-xs-raw: 0 1px 2px 0 oklch(0 0 0 / 0.25);
+  --shadow-sm-raw: 0 1px 3px 0 oklch(0 0 0 / 0.35), 0 1px 2px -1px oklch(0 0 0 / 0.25);
+  --shadow-md-raw: 0 4px 6px -1px oklch(0 0 0 / 0.35), 0 2px 4px -2px oklch(0 0 0 / 0.25);
+  --shadow-lg-raw: 0 10px 15px -3px oklch(0 0 0 / 0.40), 0 4px 6px -4px oklch(0 0 0 / 0.30);
+  --shadow-xl-raw: 0 20px 25px -5px oklch(0 0 0 / 0.45), 0 8px 10px -6px oklch(0 0 0 / 0.35);
+  --shadow-2xl-raw: 0 25px 50px -12px oklch(0 0 0 / 0.55);
+  --shadow-glow-primary-raw: 0 0 20px 4px oklch(0.701 0.187 152.8 / 0.30);
+  --shadow-glow-harvest-raw: 0 0 20px 4px oklch(0.864 0.192 84.5 / 0.30);
+  --shadow-inner-sm-raw: inset 0 2px 4px 0 oklch(0 0 0 / 0.25);
+}
+
+/* ─────────────────────────── 5. BASE LAYER ─────────────────────────── */
+@layer base {
+  /* Universal box-model reset */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Apply border and outline tokens to all elements */
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  /* ── HTML Root ── */
+  html {
+    @apply h-full scroll-smooth;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Prevent layout shift from scrollbar */
+    scrollbar-gutter: stable;
+  }
+
+  /* ── Body ── */
+  body {
+    @apply bg-background text-foreground min-h-full flex flex-col;
+    font-size: 1rem;
+    line-height: 1.6;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* ── Typography scale defaults ── */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-plus-jakarta-sans), var(--font-inter), system-ui, sans-serif;
+    font-weight: 700;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+    @apply text-foreground;
+  }
+
+  h1 { font-size: clamp(2rem, 4.5vw, 3.5rem); }
+  h2 { font-size: clamp(1.625rem, 3.5vw, 2.75rem); }
+  h3 { font-size: clamp(1.375rem, 2.5vw, 2rem); }
+  h4 { font-size: clamp(1.125rem, 2vw, 1.5rem); }
+  h5 { font-size: clamp(1rem, 1.5vw, 1.25rem); }
+  h6 { font-size: 1rem; }
+
+  p {
+    @apply text-foreground/80;
+    max-width: 70ch; /* Optimal line length for readability */
+  }
+
+  /* ── Links ── */
+  a {
+    @apply text-primary underline-offset-4;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+  a:hover { @apply text-primary/80; }
+
+  /* ── Focus visible (keyboard navigation) ── */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring rounded-sm;
+  }
+
+  /* ── Selection ── */
+  ::selection {
+    background-color: oklch(0.524 0.163 150.9 / 0.25);
+    color: var(--foreground);
+  }
+
+  /* ── Scrollbar styling (Webkit) ── */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--muted);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: oklch(0.524 0.163 150.9 / 0.5);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.524 0.163 150.9 / 0.75);
+  }
+
+  /* ── Reduce motion accessibility ── */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* ── Image defaults ── */
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  /* ── Form element font inheritance ── */
+  input, button, textarea, select {
+    font: inherit;
+  }
+
+  /* ── Overflow wrap for long words ── */
+  p, h1, h2, h3, h4, h5, h6 {
+    overflow-wrap: break-word;
+  }
+
+  /* ── Interactive elements ── */
+  button, [role="button"], [tabindex] {
+    cursor: pointer;
+  }
+
+  button:disabled, [aria-disabled="true"] {
+    cursor: not-allowed;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  /* ── Skip to content link (a11y) ── */
+  .skip-to-content {
+    @apply sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4
+           focus:z-[9999] focus:px-4 focus:py-2 focus:rounded-md
+           focus:bg-primary focus:text-primary-foreground focus:shadow-lg;
+  }
+
+  /* ── Code ── */
+  code, kbd, samp, pre {
+    font-family: var(--font-jetbrains-mono), "Courier New", monospace;
+    font-size: 0.875em;
+  }
+
+  /* ── HR ── */
+  hr {
+    @apply border-border;
+  }
+}
+
+/* ─────────────────────────── 6. UTILITY LAYER ─────────────────────────── */
+@layer utilities {
+  /* ── Text balance utilities ── */
+  .text-balance    { text-wrap: balance; }
+  .text-pretty     { text-wrap: pretty; }
+
+  /* ── Fluid container padding ── */
+  .container-padding {
+    padding-left: var(--page-padding-x);
+    padding-right: var(--page-padding-x);
+  }
+
+  /* ── Section vertical rhythm ── */
+  .section-padding {
+    padding-top: var(--section-padding-y);
+    padding-bottom: var(--section-padding-y);
+  }
+
+  /* ── Gradient utilities ── */
+  .gradient-brand {
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.701 0.187 152.8),
+      oklch(0.524 0.163 150.9)
+    );
+  }
+
+  .gradient-brand-harvest {
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.524 0.163 150.9),
+      oklch(0.802 0.189 79.2)
+    );
+  }
+
+  .gradient-hero {
+    background-image: linear-gradient(
+      160deg,
+      oklch(0.972 0.044 150.5) 0%,
+      oklch(0.987 0.034 88.4) 50%,
+      oklch(0.992 0.004 150.5) 100%
+    );
+  }
+
+  .dark .gradient-hero {
+    background-image: linear-gradient(
+      160deg,
+      oklch(0.175 0.020 150.2) 0%,
+      oklch(0.210 0.032 89.2) 50%,
+      oklch(0.134 0.018 150.1) 100%
+    );
+  }
+
+  /* ── Glassmorphism ── */
+  .glass {
+    background: oklch(1 0 0 / 0.65);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid oklch(1 0 0 / 0.2);
+  }
+
+  .dark .glass {
+    background: oklch(0.175 0.020 150.2 / 0.65);
+    border: 1px solid oklch(1 0 0 / 0.08);
+  }
+
+  /* ── Glow effects ── */
+  .glow-primary { box-shadow: var(--shadow-glow-primary-raw); }
+  .glow-harvest { box-shadow: var(--shadow-glow-harvest-raw); }
+
+  /* ── Animated gradient text ── */
+  .gradient-text {
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-image: linear-gradient(
+      135deg,
+      oklch(0.524 0.163 150.9),
+      oklch(0.802 0.189 79.2),
+      oklch(0.524 0.163 150.9)
+    );
+    background-size: 200% auto;
+    animation: gradient-shift 4s linear infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%   { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+
+  /* ── Full-bleed utility ── */
+  .full-bleed {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  /* ── Aspect ratio helpers ── */
+  .aspect-card     { aspect-ratio: 4 / 3; }
+  .aspect-portrait { aspect-ratio: 3 / 4; }
+  .aspect-video    { aspect-ratio: 16 / 9; }
+  .aspect-square   { aspect-ratio: 1 / 1; }
+  .aspect-banner   { aspect-ratio: 21 / 9; }
+
+  /* ── Interactive state utilities ── */
+  .interactive {
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out),
+                opacity var(--duration-fast) var(--ease-out);
+    will-change: transform, box-shadow;
+  }
+  .interactive:hover {
+    transform: translateY(-2px);
+    @apply shadow-md;
+  }
+  .interactive:active {
+    transform: translateY(0);
+  }
+
+  /* ── Truncation helpers ── */
+  .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
+  .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .line-clamp-3 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; }
+
+  /* ── Screen reader only ── */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* ── Divider with label ── */
+  .divider-label {
+    @apply flex items-center gap-4 text-muted-foreground text-sm;
+  }
+  .divider-label::before,
+  .divider-label::after {
+    content: "";
+    @apply flex-1 border-t border-border;
+  }
+}
