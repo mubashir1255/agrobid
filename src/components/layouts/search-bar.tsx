@@ -20,6 +20,9 @@ export interface SearchSuggestion {
   href?: string;
 }
 
+type SearchDropdownItem =
+  { type: "recent"; query: string } | ({ type: "suggestion" } & SearchSuggestion);
+
 export interface SearchFilter {
   id: string;
   label: string;
@@ -99,7 +102,18 @@ export function SearchBar({
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen) return;
-      const items = [...(showRecent && recentSearches.length > 0 ? [{ type: 'recent' as const }] : []), ...suggestions];
+      const items: SearchDropdownItem[] = [
+        ...(showRecent
+          ? recentSearches.map((recentQuery) => ({
+              type: "recent" as const,
+              query: recentQuery,
+            }))
+          : []),
+        ...suggestions.map((suggestion) => ({
+          type: "suggestion" as const,
+          ...suggestion,
+        })),
+      ];
       if (items.length === 0) return;
 
       switch (e.key) {
@@ -115,10 +129,9 @@ export function SearchBar({
           e.preventDefault();
           if (focusedIndex >= 0) {
             const item = items[focusedIndex];
-            if (item.type === 'recent') {
-              const recentQuery = recentSearches[focusedIndex];
-              setQuery(recentQuery);
-              onSearch?.(recentQuery);
+            if (item.type === "recent") {
+              setQuery(item.query);
+              onSearch?.(item.query);
             } else if (item.href) {
               window.location.href = item.href;
             } else {
@@ -205,13 +218,16 @@ export function SearchBar({
   const hasResults = suggestions.length > 0 || (showRecent && recentSearches.length > 0);
 
   return (
-    <div className={cn("relative w-full max-w-xl flex items-center gap-2", className)}>
-      <form onSubmit={handleSubmit} className="relative w-full flex items-center">
+    <div className={cn("relative flex w-full max-w-xl items-center gap-2", className)}>
+      <form onSubmit={handleSubmit} className="relative flex w-full items-center">
         <label htmlFor="global-search" className="sr-only">
           Global search
         </label>
-        <div className="relative w-full flex items-center">
-          <Search className="absolute left-3 h-4 w-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
+        <div className="relative flex w-full items-center">
+          <Search
+            className="pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground"
+            aria-hidden="true"
+          />
           <Input
             ref={inputRef}
             id="global-search"
@@ -230,7 +246,7 @@ export function SearchBar({
               setTimeout(() => setIsOpen(false), 200);
             }}
             placeholder={placeholder}
-            className="pl-10 pr-10 h-10 text-sm"
+            className="h-10 pr-10 pl-10 text-sm"
             autoFocus={autoFocus}
             autoComplete="off"
             aria-expanded={isOpen && hasResults}
@@ -251,7 +267,13 @@ export function SearchBar({
             </Button>
           )}
         </div>
-        <Button type="submit" variant="default" size="icon-sm" className="ml-1" aria-label="Submit search">
+        <Button
+          type="submit"
+          variant="default"
+          size="icon-sm"
+          className="ml-1"
+          aria-label="Submit search"
+        >
           <Search className="h-4 w-4" />
         </Button>
       </form>
@@ -269,7 +291,7 @@ export function SearchBar({
         >
           <Filter className="h-4 w-4" />
           {activeFilters.length > 0 && (
-            <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
               {activeFilters.length}
             </span>
           )}
@@ -282,12 +304,12 @@ export function SearchBar({
           ref={dropdownRef}
           id="search-suggestions"
           role="listbox"
-          className="absolute top-full left-0 right-0 z-50 mt-2 w-full bg-popover border border-border rounded-xl shadow-lg overflow-hidden animate-in fade-in-0 zoom-in-95 slide-in-from-top-2"
+          className="absolute top-full right-0 left-0 z-50 mt-2 w-full animate-in overflow-hidden rounded-xl border border-border bg-popover shadow-lg fade-in-0 zoom-in-95 slide-in-from-top-2"
         >
           {showRecent && recentSearches.length > 0 && (
-            <div className="p-2 border-b border-border">
+            <div className="border-b border-border p-2">
               <div className="flex items-center justify-between px-2 py-1">
-                <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
                   <Clock className="h-3 w-3" /> Recent
                 </span>
                 {onClearRecent && (
@@ -305,7 +327,7 @@ export function SearchBar({
                   </Button>
                 )}
               </div>
-              <div role="list" className="space-y-1 max-h-48 overflow-y-auto">
+              <div role="list" className="max-h-48 space-y-1 overflow-y-auto">
                 {recentSearches.map((recent, idx) => (
                   <button
                     key={recent}
@@ -315,14 +337,17 @@ export function SearchBar({
                     onClick={() => handleRecentClick(recent)}
                     onMouseEnter={() => setFocusedIndex(idx)}
                     className={cn(
-                      "w-full px-3 py-2 text-left text-sm rounded-lg transition-colors",
+                      "w-full rounded-lg px-3 py-2 text-left text-sm transition-colors",
                       focusedIndex === idx
                         ? "bg-accent text-accent-foreground"
-                        : "hover:bg-muted text-foreground"
+                        : "text-foreground hover:bg-muted",
                     )}
                   >
                     <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+                      <Clock
+                        className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                        aria-hidden="true"
+                      />
                       <span className="truncate">{recent}</span>
                     </div>
                   </button>
@@ -332,9 +357,11 @@ export function SearchBar({
           )}
 
           {suggestions.length > 0 && (
-            <div className="p-2 max-h-60 overflow-y-auto" role="list">
+            <div className="max-h-60 overflow-y-auto p-2" role="list">
               {suggestions.map((suggestion, idx) => {
-                const itemIndex = (showRecent && recentSearches.length > 0 ? recentSearches.length : 0) + idx;
+                const itemIndex =
+                  (showRecent && recentSearches.length > 0 ? recentSearches.length : 0) +
+                  idx;
                 return (
                   <button
                     key={suggestion.id}
@@ -344,16 +371,21 @@ export function SearchBar({
                     onClick={() => handleSuggestionClick(suggestion)}
                     onMouseEnter={() => setFocusedIndex(itemIndex)}
                     className={cn(
-                      "w-full px-3 py-2.5 text-left rounded-lg transition-colors flex items-center gap-3",
+                      "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
                       focusedIndex === itemIndex
                         ? "bg-accent text-accent-foreground"
-                        : "hover:bg-muted text-foreground"
+                        : "text-foreground hover:bg-muted",
                     )}
                   >
-                    <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                    <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                      <span className="font-medium truncate">{suggestion.label}</span>
-                      <span className="text-xs text-muted-foreground truncate">{suggestion.category}</span>
+                    <Search
+                      className="h-4 w-4 shrink-0 text-muted-foreground"
+                      aria-hidden="true"
+                    />
+                    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="truncate font-medium">{suggestion.label}</span>
+                      <span className="truncate text-xs text-muted-foreground">
+                        {suggestion.category}
+                      </span>
                     </div>
                   </button>
                 );
@@ -369,10 +401,12 @@ export function SearchBar({
           id="filter-panel"
           role="dialog"
           aria-label="Search filters"
-          className="absolute top-full right-0 z-50 mt-2 w-56 bg-popover border border-border rounded-xl shadow-lg p-2 animate-in fade-in-0 zoom-in-95 slide-in-from-top-2"
+          className="absolute top-full right-0 z-50 mt-2 w-56 animate-in rounded-xl border border-border bg-popover p-2 shadow-lg fade-in-0 zoom-in-95 slide-in-from-top-2"
         >
-          <div className="flex items-center justify-between px-2 py-1 mb-1">
-            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Filters</span>
+          <div className="mb-1 flex items-center justify-between px-2 py-1">
+            <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Filters
+            </span>
             {activeFilters.length > 0 && (
               <Button
                 type="button"
@@ -385,11 +419,11 @@ export function SearchBar({
               </Button>
             )}
           </div>
-          <div className="space-y-1 max-h-64 overflow-y-auto">
+          <div className="max-h-64 space-y-1 overflow-y-auto">
             {filters.map((filter) => (
               <label
                 key={filter.id}
-                className="flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer hover:bg-muted transition-colors"
+                className="flex cursor-pointer items-center gap-2 rounded-lg px-2 py-2 transition-colors hover:bg-muted"
               >
                 <input
                   type="checkbox"
@@ -397,9 +431,13 @@ export function SearchBar({
                   onChange={() => handleFilterToggle(filter.id)}
                   className="h-4 w-4 rounded border-border text-primary focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 />
-                <span className="text-sm text-foreground flex-1 truncate">{filter.label}</span>
+                <span className="flex-1 truncate text-sm text-foreground">
+                  {filter.label}
+                </span>
                 {filter.count !== undefined && (
-                  <span className="text-xs text-muted-foreground font-mono">{filter.count}</span>
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {filter.count}
+                  </span>
                 )}
               </label>
             ))}
