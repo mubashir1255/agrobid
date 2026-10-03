@@ -31,12 +31,21 @@ const provinces = [
   "Gilgit-Baltistan",
 ];
 
+
 const units = [
-  { value: "maund", label: "Maund (من - 40 KG)" },
-  { value: "kg", label: "Kilogram (کلوگرام)" },
+  // Grains & Crops
+  { value: "man", label: "Man (من - 40 KG)" },
+  { value: "bori", label: "Bori / Bag (بوری - 50/100 KG)" },
   { value: "ton", label: "Metric Ton (ٹن)" },
-  { value: "bori", label: "Bag / Bori (بوری)" },
-  { value: "head", label: "Head / Livestock (راس)" },
+  { value: "kg", label: "Kilogram (کلوگرام)" },
+
+  // Fruits & Vegetables Packaging
+  { value: "peti", label: "Peti / Wooden Crate (لکڑی کی پیٹی)" },
+  { value: "carton", label: "Carton / Dabba (ڈبہ / کارٹن)" },
+  { value: "crate", label: "Plastic Crate (کریٹ)" },
+
+  // Livestock
+  { value: "head", label: "Head / Animal (راس)" },
 ];
 
 export function CreateListingForm({
