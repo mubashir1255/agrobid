@@ -1,0 +1,118 @@
+export type Language = "en" | "ur";
+
+export const translations = {
+  en: {
+    // Navigation & Shell
+    brandSubtitle: "Marketplace",
+    dashboard: "Dashboard",
+    listings: "Listings",
+    liveAuctions: "Live Auctions",
+    signOut: "Sign out",
+    languageToggle: "اردو",
+
+    // Dashboard Home
+    verifiedMember: "Verified AgroBid Member",
+    welcome: "Welcome",
+    dashboardSubtitle: "Buy, sell, or auction crops and livestock directly across Pakistan. Transparent prices with zero hidden middlemen.",
+    sellProductCardTitle: "Sell Product",
+    sellProductCardDesc: "Post your agricultural produce, crops, or livestock with fixed rates or open inquiries.",
+    createListingBtn: "Create Listing",
+    liveAuctionsCardTitle: "Live Auctions",
+    liveAuctionsCardDesc: "Start an open auction with a starting price or place live bids on available crop lots.",
+    viewAuctionsBtn: "View Auctions",
+    marketplaceCardTitle: "Marketplace",
+    marketplaceCardDesc: "Explore Wheat, Rice, Cotton, Corn, Fruits, and local Mandi rates.",
+    browseAllBtn: "Browse All",
+    platformActivity: "Your Platform Activity",
+    realTimeNotice: "Updated in real-time",
+    activeListingsCount: "Active Listings",
+    activeAuctionsCount: "Active Auctions",
+    bidsPlacedCount: "Bids Placed",
+    completedDealsCount: "Completed Deals",
+
+    // Marketplace / Feed
+    marketplaceTitle: "Marketplace",
+    marketplaceSubtitle: "Browse available crops, harvest lots, fruits, vegetables, and live auctions across Pakistan.",
+    sellProduceAction: "Sell Produce",
+    filterAll: "All Items",
+    filterDirect: "Fixed Price",
+    filterAuction: "Live Auctions",
+    noListingsFound: "No listings found",
+    noListingsDesc: "Be the first farmer or trader to list produce in this category.",
+    postFirstListing: "Post First Listing",
+    available: "available",
+    price: "Price",
+    currentBid: "Current Bid",
+    bidNow: "Bid Now",
+    viewDetails: "Details",
+    endsOn: "Ends",
+
+    // Units
+    unit_man: "Man (40 KG)",
+    unit_bori: "Bori / Bag",
+    unit_peti: "Peti / Crate",
+    unit_carton: "Carton / Dabba",
+    unit_crate: "Plastic Crate",
+    unit_kg: "KG",
+    unit_ton: "Metric Ton",
+    unit_head: "Head / Livestock",
+  },
+  ur: {
+    // Navigation & Shell
+    brandSubtitle: "زرعی منڈی",
+    dashboard: "ڈیش بورڈ",
+    listings: "فصلیں و پیداوار",
+    liveAuctions: "لائیو نیلامی",
+    signOut: "لاگ آؤٹ",
+    languageToggle: "English",
+
+    // Dashboard Home
+    verifiedMember: "تصدیق شدہ ایگرو بڈ ممبر",
+    welcome: "خوش آمدید",
+    dashboardSubtitle: "پورے پاکستان میں براہِ راست فصلیں اور مویشی خریدیں، بیچیں یا نیلام کریں۔ بغیر کسی آڑھتی یا خفیہ کمیشن کے۔",
+    sellProductCardTitle: "فصل فروخت کریں",
+    sellProductCardDesc: "اپنی زرعی اجناس، پھل یا مویشی مقررہ قیمت یا کھلی بولی پر فروخت کے لیے پیش کریں۔",
+    createListingBtn: "نیا اشتہار لگائیں",
+    liveAuctionsCardTitle: "لائیو بولیاں (نیلامی)",
+    liveAuctionsCardDesc: "شروعاتی قیمت مقرر کر کے نیلامی شروع کریں یا لائیو بولیوں میں شرکت کریں۔",
+    viewAuctionsBtn: "نیلامی دیکھیں",
+    marketplaceCardTitle: "زرعی منڈی",
+    marketplaceCardDesc: "گندم، چاول، کپاس، مکئی، پھل، سبزیاں اور منڈی کے تازہ ریٹس دریافت کریں۔",
+    browseAllBtn: "تمام دیکھیں",
+    platformActivity: "آپ کی سرگرمیاں",
+    realTimeNotice: "تازہ ترین ریکارڈ",
+    activeListingsCount: "فعال اشتہارات",
+    activeAuctionsCount: "فعال بولیاں",
+    bidsPlacedCount: "لگائی گئی بولیاں",
+    completedDealsCount: "مکمل سودے",
+
+    // Marketplace / Feed
+    marketplaceTitle: "زرعی منڈی",
+    marketplaceSubtitle: "پاکستان بھر سے دستیاب فصلیں، غلہ، باغات، سبزیاں اور لائیو نیلامیاں دیکھیں۔",
+    sellProduceAction: "فصل / مال درج کریں",
+    filterAll: "تمام اجناس و پھل",
+    filterDirect: "مقررہ قیمت (براہ راست)",
+    filterAuction: "لائیو نیلامی (بولی)",
+    noListingsFound: "کوئی اشتہار نہیں ملا",
+    noListingsDesc: "اس کیٹیگری میں سب سے پہلے اپنی پیداوار درج کروائیں۔",
+    postFirstListing: "پہلا اشتہار لگائیں",
+    available: "دستیاب",
+    price: "قیمت",
+    currentBid: "موجودہ بولی",
+    bidNow: "بولی لگائیں",
+    viewDetails: "تفصیلات",
+    endsOn: "ختم ہونے کی تاریخ",
+
+    // Units
+    unit_man: "من (40 کلو)",
+    unit_bori: "بوری",
+    unit_peti: "پیٹی",
+    unit_carton: "ڈبہ / کارٹن",
+    unit_crate: "کریٹ",
+    unit_kg: "کلوگرام",
+    unit_ton: "میٹرک ٹن",
+    unit_head: "راس (جانور)",
+  },
+} as const;
+
+export type TranslationKeys = keyof typeof translations.en;

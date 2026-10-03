@@ -6,15 +6,14 @@ import {
   LayoutDashboard,
   ShoppingBag,
   Gavel,
-  PlusCircle,
   LogOut,
   MapPin,
-  User,
 } from "lucide-react";
 
 import { createClient } from "@/lib/supabase/server";
 import { signOutAction } from "@/app/auth/actions";
 import { Button } from "@/components/ui/button";
+import { LanguageToggle } from "@/components/ui/language-toggle";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -74,14 +73,14 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
                 Dashboard
               </Link>
               <Link
-                href="/dashboard"
+                href="/dashboard/listings"
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
               >
                 <ShoppingBag className="size-4" />
                 Listings
               </Link>
               <Link
-                href="/dashboard"
+                href="/dashboard/listings?type=auction"
                 className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition"
               >
                 <Gavel className="size-4" />
@@ -92,6 +91,8 @@ export default async function DashboardLayout({ children }: DashboardLayoutProps
 
           {/* User Profile & Actions */}
           <div className="flex items-center gap-3">
+            <LanguageToggle />
+
             <div className="hidden sm:flex flex-col text-right">
               <span className="text-sm font-semibold leading-none">{displayName}</span>
               <span className="inline-flex items-center justify-end gap-1 text-xs text-muted-foreground mt-1">

@@ -7,16 +7,20 @@
  *  - Configure Next.js font optimization (Inter + Plus Jakarta Sans + JetBrains Mono)
  *  - Apply CSS variable font references to <html>
  *  - Wrap the tree in ThemeProvider for dark/light mode support
+ *  - Wrap the tree in LanguageProvider for English ⇄ Urdu bilingual support
  *  - Define site-wide SEO metadata via Next.js Metadata API
- *  - Set accessibility attributes (lang, dir)
+ *  - Set accessibility attributes (lang, dir) dynamically from cookies
  *  - Render the skip-to-content link for keyboard users
  */
 
 import type { Metadata, Viewport } from "next";
+import { cookies } from "next/headers";
 import { Inter, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { LanguageProvider } from "@/components/providers/language-provider";
 import { Toaster } from "@/components/ui/toast";
 import { siteConfig } from "@/config/site";
+import type { Language } from "@/config/i18n";
 import "./globals.css";
 
 /* ─────────────────────────────────────────────────────────────────
@@ -50,16 +54,13 @@ const fontJetBrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains-mono",
   display: "swap",
-  preload: false, // Code font — lazy load to avoid blocking LCP
+  preload: false,
   weight: ["400", "500"],
   fallback: ["Courier New", "monospace"],
 });
 
 /* ─────────────────────────────────────────────────────────────────
    SITE-WIDE METADATA
-   Next.js Metadata API — auto-injected into <head> on every route.
-   Page-level layouts can override specific fields via their own
-   `export const metadata` exports.
 ───────────────────────────────────────────────────────────────── */
 
 export const metadata: Metadata = {
@@ -147,7 +148,7 @@ export const viewport: Viewport = {
   ],
   width: "device-width",
   initialScale: 1,
-  maximumScale: 5, // Allow zoom for accessibility — never set to 1
+  maximumScale: 5,
 };
 
 /* ─────────────────────────────────────────────────────────────────
@@ -158,12 +159,16 @@ interface RootLayoutProps {
   children: React.ReactNode;
 }
 
-export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
+export default async function RootLayout({ children }: Readonly<RootLayoutProps>) {
+  const cookieStore = await cookies();
+  const savedLang = (cookieStore.get("agrobid_lang")?.value as Language) || "en";
+  const initialDir = savedLang === "ur" ? "rtl" : "ltr";
+
   return (
     <html
-      lang={siteConfig.lang}
-      dir="ltr"
-      suppressHydrationWarning // Required by next-themes to prevent hydration mismatch
+      lang={savedLang}
+      dir={initialDir}
+      suppressHydrationWarning
       className={[
         fontInter.variable,
         fontPlusJakartaSans.variable,
@@ -172,7 +177,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
       ].join(" ")}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {/* Skip to main content — keyboard / screen reader accessibility */}
+        {/* Skip to main content */}
         <a href="#main-content" className="skip-to-content">
           Skip to main content
         </a>
@@ -184,8 +189,10 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           disableTransitionOnChange={false}
           storageKey="agrobid-theme"
         >
-          {children}
-          <Toaster position="top-right" richColors closeButton />
+          <LanguageProvider initialLanguage={savedLang}>
+            {children}
+            <Toaster position="top-right" richColors closeButton />
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>
