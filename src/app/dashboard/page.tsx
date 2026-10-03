@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import Link from "next/link";
 import {
@@ -10,23 +12,11 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 
-import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/components/providers/language-provider";
 
-export default async function DashboardPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("full_name, city, province")
-    .eq("id", user?.id || "")
-    .maybeSingle();
-
-  const firstName = profile?.full_name ? profile.full_name.split(" ")[0] : "Farmer";
+export default function DashboardPage() {
+  const { t } = useLanguage();
 
   return (
     <div className="space-y-8">
@@ -35,15 +25,15 @@ export default async function DashboardPage() {
         <div className="relative z-10 max-w-2xl space-y-4">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-semibold backdrop-blur text-harvest-300">
             <ShieldCheck className="size-4" />
-            Verified AgroBid Member
+            {t("verifiedMember")}
           </div>
 
           <h1 className="font-heading text-3xl sm:text-4xl font-bold tracking-tight">
-            Khush Amdeed, {firstName} 👋
+            {t("welcome")} 👋
           </h1>
 
           <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-            Buy, sell, or auction crops and livestock directly across Pakistan. Transparent prices with zero hidden middlemen.
+            {t("dashboardSubtitle")}
           </p>
         </div>
 
@@ -62,17 +52,17 @@ export default async function DashboardPage() {
             </div>
             <div>
               <h3 className="font-heading text-xl font-bold text-foreground">
-                Sell Product (فروخت کریں)
+                {t("sellProductCardTitle")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Post your agricultural produce, crops, or livestock with fixed rates or open inquiries.
+                {t("sellProductCardDesc")}
               </p>
             </div>
           </div>
 
           <Button className="mt-6 w-full rounded-xl justify-between" asChild>
             <Link href="/dashboard/listings/create">
-              <span>Create Listing</span>
+              <span>{t("createListingBtn")}</span>
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
@@ -86,17 +76,17 @@ export default async function DashboardPage() {
             </div>
             <div>
               <h3 className="font-heading text-xl font-bold text-foreground">
-                Live Auctions (بولی لگائیں)
+                {t("liveAuctionsCardTitle")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Start an open auction with a starting price or place live bids on available crop lots.
+                {t("liveAuctionsCardDesc")}
               </p>
             </div>
           </div>
 
           <Button variant="outline" className="mt-6 w-full rounded-xl justify-between" asChild>
-            <Link href="/dashboard/auctions">
-              <span>View Auctions</span>
+            <Link href="/dashboard/listings?type=auction">
+              <span>{t("viewAuctionsBtn")}</span>
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
@@ -110,49 +100,49 @@ export default async function DashboardPage() {
             </div>
             <div>
               <h3 className="font-heading text-xl font-bold text-foreground">
-                Marketplace (منڈی دریافت کریں)
+                {t("marketplaceCardTitle")}
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
-                Explore Wheat, Rice, Cotton, Corn, Fertilizer, and Mandi rates nearby.
+                {t("marketplaceCardDesc")}
               </p>
             </div>
           </div>
 
           <Button variant="outline" className="mt-6 w-full rounded-xl justify-between" asChild>
-            <Link href="/dashboard">
-              <span>Browse All</span>
+            <Link href="/dashboard/listings">
+              <span>{t("browseAllBtn")}</span>
               <ArrowUpRight className="size-4" />
             </Link>
           </Button>
         </div>
       </section>
 
-      {/* Activity Overview Placeholders */}
+      {/* Activity Overview */}
       <section className="rounded-3xl border bg-card p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <TrendingUp className="size-5 text-brand-700" />
-            <h2 className="font-heading text-lg font-bold">Your Platform Activity</h2>
+            <h2 className="font-heading text-lg font-bold">{t("platformActivity")}</h2>
           </div>
-          <span className="text-xs text-muted-foreground">Updated in real-time</span>
+          <span className="text-xs text-muted-foreground">{t("realTimeNotice")}</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
             <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground mt-1">Active Listings</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("activeListingsCount")}</p>
           </div>
           <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
             <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground mt-1">Active Auctions</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("activeAuctionsCount")}</p>
           </div>
           <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
             <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground mt-1">Bids Placed</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("bidsPlacedCount")}</p>
           </div>
           <div className="p-4 rounded-2xl bg-muted/40 border border-border/50">
             <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground mt-1">Completed Deals</p>
+            <p className="text-xs text-muted-foreground mt-1">{t("completedDealsCount")}</p>
           </div>
         </div>
       </section>
