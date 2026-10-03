@@ -12,9 +12,15 @@
  * Note: ESLint build configuration is handled via eslint.config.mjs.
  */
 
+import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  /* ── Turbopack Root ── */
+  turbopack: {
+    root: path.resolve(__dirname),
+  },
+
   /* ── React Compiler ── */
   reactCompiler: true,
 

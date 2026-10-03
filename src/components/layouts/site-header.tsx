@@ -45,56 +45,54 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
   return (
     <header
       className={cn(
-        "fixed top-0 inset-x-0 z-50 h-[var(--header-height)]",
+        "fixed inset-x-0 top-0 z-50 h-[var(--header-height)]",
         "transition-all duration-300 ease-out",
         solid && ["glass", "border-b border-border/60"],
-        onHero && "bg-transparent border-transparent",
-        className
+        onHero && "border-transparent bg-transparent",
+        className,
       )}
       role="banner"
     >
       <nav
         aria-label="Main navigation"
-        className="flex h-full items-center container-padding max-w-[var(--container-2xl)] mx-auto gap-3"
+        className="container-padding mx-auto flex h-full max-w-[var(--container-2xl)] items-center gap-3"
       >
         <Link
           href="/"
-          className="flex items-center gap-2 no-underline group shrink-0"
+          className="group flex shrink-0 items-center gap-2 no-underline"
           aria-label={`${siteConfig.name} — home`}
         >
           <span
             aria-hidden="true"
             className={cn(
-              "flex h-8 w-8 items-center justify-center rounded-lg font-heading font-bold text-sm",
+              "flex h-8 w-8 items-center justify-center rounded-lg font-heading text-sm font-bold",
               "gradient-brand text-white shadow-sm",
-              "transition-transform duration-200 group-hover:scale-105"
+              "transition-transform duration-200 group-hover:scale-105",
             )}
           >
             A
           </span>
           <span
             className={cn(
-              "font-heading font-bold text-lg leading-none",
-              onHero ? "text-white" : "text-foreground"
+              "font-heading text-lg leading-none font-bold",
+              onHero ? "text-white" : "text-foreground",
             )}
           >
             {siteConfig.shortName}
-            <span className={onHero ? "text-harvest-400" : "text-primary"}>
-              .
-            </span>
+            <span className={onHero ? "text-harvest-400" : "text-primary"}>.</span>
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-1 ml-6">
+        <div className="ml-6 hidden items-center gap-1 md:flex">
           {siteConfig.navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               className={cn(
-                "px-3 py-1.5 rounded-md text-sm font-medium no-underline transition-colors duration-150",
+                "rounded-md px-3 py-1.5 text-sm font-medium no-underline transition-colors duration-150",
                 onHero
-                  ? "text-white/80 hover:text-white hover:bg-white/10"
-                  : "text-foreground/70 hover:text-foreground hover:bg-muted"
+                  ? "text-white/80 hover:bg-white/10 hover:text-white"
+                  : "text-foreground/70 hover:bg-muted hover:text-foreground",
               )}
             >
               {link.label}
@@ -106,8 +104,7 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
           <ThemeToggle
             variant="icon"
             className={cn(
-              onHero &&
-                "text-white hover:bg-white/10 hover:text-white border-white/20"
+              onHero && "border-white/20 text-white hover:bg-white/10 hover:text-white",
             )}
           />
 
@@ -117,14 +114,14 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
             size="sm"
             className={cn(
               "hidden sm:inline-flex",
-              onHero && "text-white hover:bg-white/10 hover:text-white"
+              onHero && "text-white hover:bg-white/10 hover:text-white",
             )}
           >
-            <Link href="/login">Log in</Link>
+            <Link href="/auth/login">Log in</Link>
           </Button>
 
           <Button asChild size="sm" variant={onHero ? "harvest" : "default"}>
-            <Link href="/register">Register</Link>
+            <Link href="/auth/login">Register</Link>
           </Button>
 
           <Button
@@ -133,18 +130,14 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
             size="icon-sm"
             className={cn(
               "md:hidden",
-              onHero && "text-white hover:bg-white/10 hover:text-white"
+              onHero && "text-white hover:bg-white/10 hover:text-white",
             )}
             aria-expanded={mobileOpen}
             aria-controls="mobile-nav"
             aria-label={mobileOpen ? "Close menu" : "Open menu"}
             onClick={() => setMobileOpen((v) => !v)}
           >
-            {mobileOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
+            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
         </div>
       </nav>
@@ -152,14 +145,14 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
       {mobileOpen ? (
         <div
           id="mobile-nav"
-          className="md:hidden absolute inset-x-0 top-[var(--header-height)] border-b border-border bg-background shadow-md"
+          className="absolute inset-x-0 top-[var(--header-height)] border-b border-border bg-background shadow-md md:hidden"
         >
-          <ul className="container-padding max-w-[var(--container-2xl)] mx-auto py-4 space-y-1 list-none m-0">
+          <ul className="container-padding m-0 mx-auto max-w-[var(--container-2xl)] list-none space-y-1 py-4">
             {siteConfig.navLinks.map((link) => (
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="block px-3 py-2.5 rounded-lg text-sm font-medium text-foreground hover:bg-muted no-underline"
+                  className="block rounded-lg px-3 py-2.5 text-sm font-medium text-foreground no-underline hover:bg-muted"
                   onClick={() => setMobileOpen(false)}
                 >
                   {link.label}
@@ -168,7 +161,7 @@ export function SiteHeader({ transparent = false, className }: SiteHeaderProps) 
             ))}
             <li className="pt-2 sm:hidden">
               <Button asChild variant="outline" size="sm" fullWidth>
-                <Link href="/login" onClick={() => setMobileOpen(false)}>
+                <Link href="/auth/login" onClick={() => setMobileOpen(false)}>
                   Log in
                 </Link>
               </Button>
