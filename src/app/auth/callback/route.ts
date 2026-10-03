@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
         .maybeSingle();
 
       if (profile?.onboarding_completed) {
-        // Reuse the response object so session cookies are NOT lost
-        response.headers.set("Location", `${origin}/`);
+        // Reuse response to preserve session cookies, redirecting to the dashboard
+        response.headers.set("Location", `${origin}/dashboard`);
         return response;
       }
     }

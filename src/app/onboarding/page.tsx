@@ -61,7 +61,7 @@ export default function OnboardingPage() {
           .maybeSingle();
 
         if (profile?.onboarding_completed) {
-          if (isMounted) router.replace("/");
+          if (isMounted) router.replace("/dashboard");
           return;
         }
 
@@ -129,7 +129,7 @@ export default function OnboardingPage() {
         throw profileError;
       }
 
-      router.replace("/");
+      router.replace("/dashboard");
     } catch (err) {
       setError(
         err instanceof Error
