@@ -1,54 +1,90 @@
 "use client";
 
 import * as React from "react";
-import { ArrowRight, Check, Mail, Phone, ShieldCheck, Sprout } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import {
+  ArrowRight,
+  Check,
+  Mail,
+  Phone,
+  ShieldCheck,
+  Sprout,
+  CheckCircle2,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
 type LoginMethod = "phone" | "email";
 
-export default function LoginPage() {
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [method, setMethod] = React.useState<LoginMethod>("phone");
   const [value, setValue] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [error, setError] = React.useState("");
-  const [otpSent, setOtpSent] = React.useState(false);
+  const [formError, setFormError] = React.useState("");
+  const [emailSent, setEmailSent] = React.useState(false);
 
-  const supabase = createClient();
+  const supabase = React.useMemo(() => createClient(), []);
   const isPhone = method === "phone";
 
-  async function handleSendOtp() {
-    const input = value.trim();
+  const callbackError =
+    searchParams.get("error") === "auth_callback_failed"
+      ? "Authentication link expired or opened in a different browser. Please try again."
+      : "";
 
+  const displayError = formError || callbackError;
+
+  async function handleSubmit() {
+    const input = value.trim();
     if (!input) return;
 
     setLoading(true);
-    setError("");
+    setFormError("");
 
     try {
+      let targetValue = input;
+
       if (isPhone) {
-        const phone = `+92${input.replace(/^0/, "")}`;
+        const cleanPhone = input.replace(/\D/g, "").replace(/^92/, "").replace(/^0/, "");
+        if (cleanPhone.length < 10) {
+          throw new Error("Please enter a valid Pakistani mobile number.");
+        }
+        targetValue = `+92${cleanPhone}`;
 
-        const { error } = await supabase.auth.signInWithOtp({
-          phone,
+        const { error: signInError } = await supabase.auth.signInWithOtp({
+          phone: targetValue,
         });
 
-        if (error) throw error;
+        if (signInError) throw signInError;
+
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("agrobid_auth_method", "phone");
+          sessionStorage.setItem("agrobid_auth_value", targetValue);
+        }
+
+        router.push("/auth/verify");
       } else {
-        const { error } = await supabase.auth.signInWithOtp({
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(input)) {
+          throw new Error("Please enter a valid email address.");
+        }
+
+        const { error: signInError } = await supabase.auth.signInWithOtp({
           email: input,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
         });
 
-        if (error) throw error;
-      }
+        if (signInError) throw signInError;
 
-      setOtpSent(true);
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again.",
+        setEmailSent(true);
+      }
+    } catch (err) {
+      setFormError(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -144,120 +180,142 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-8 rounded-3xl border bg-card p-6 shadow-lg sm:p-8">
-            {/* Method selector */}
-            <div
-              className="grid grid-cols-2 rounded-xl bg-muted p-1"
-              role="tablist"
-              aria-label="Login method"
-            >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={isPhone}
-                onClick={() => {
-                  setMethod("phone");
-                  setValue("");
-                  setError("");
-                  setOtpSent(false);
-                }}
-                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  isPhone
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Phone className="size-4" />
-                Phone
-              </button>
-
-              <button
-                type="button"
-                role="tab"
-                aria-selected={!isPhone}
-                onClick={() => {
-                  setMethod("email");
-                  setValue("");
-                  setError("");
-                  setOtpSent(false);
-                }}
-                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-                  !isPhone
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                <Mail className="size-4" />
-                Email
-              </button>
-            </div>
-
-            <div className="mt-7">
-              <label htmlFor="login-value" className="mb-2 block text-sm font-medium">
-                {isPhone ? "Phone number" : "Email address"}
-              </label>
-
-              <div className="relative">
-                {isPhone && (
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground">
-                    +92
-                  </div>
-                )}
-
-                <Input
-                  id="login-value"
-                  type={isPhone ? "tel" : "email"}
-                  inputMode={isPhone ? "tel" : "email"}
-                  autoComplete={isPhone ? "tel" : "email"}
-                  placeholder={isPhone ? "3XX XXXXXXX" : "you@example.com"}
-                  value={value}
-                  onChange={(event) => {
-                    setValue(event.target.value);
-                    setError("");
-                    setOtpSent(false);
+            {emailSent ? (
+              <div className="text-center py-4 space-y-4">
+                <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-brand-100 text-brand-600">
+                  <CheckCircle2 className="size-8" />
+                </div>
+                <h3 className="font-heading text-xl font-semibold">Check your email</h3>
+                <p className="text-sm text-muted-foreground">
+                  We sent a magic sign-in link to <strong className="text-foreground">{value}</strong>.
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Click the link inside the email to sign in directly.
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-4 w-full"
+                  onClick={() => {
+                    setEmailSent(false);
+                    setValue("");
                   }}
-                  className={isPhone ? "pl-12" : ""}
-                  aria-invalid={Boolean(error)}
-                />
+                >
+                  Use a different email
+                </Button>
               </div>
+            ) : (
+              <>
+                {/* Method selector */}
+                <div
+                  className="grid grid-cols-2 rounded-xl bg-muted p-1"
+                  role="tablist"
+                  aria-label="Login method"
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={isPhone}
+                    onClick={() => {
+                      setMethod("phone");
+                      setValue("");
+                      setFormError("");
+                    }}
+                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                      isPhone
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Phone className="size-4" />
+                    Phone
+                  </button>
 
-              <p className="mt-2 text-xs leading-5 text-muted-foreground">
-                {isPhone
-                  ? "We'll send a one-time verification code to your phone."
-                  : "We'll send a one-time verification code to your email."}
-              </p>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={!isPhone}
+                    onClick={() => {
+                      setMethod("email");
+                      setValue("");
+                      setFormError("");
+                    }}
+                    className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition ${
+                      !isPhone
+                        ? "bg-background text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Mail className="size-4" />
+                    Email
+                  </button>
+                </div>
 
-              {error && (
-                <p className="mt-2 text-sm text-destructive" role="alert">
-                  {error}
+                <div className="mt-7">
+                  <label htmlFor="login-value" className="mb-2 block text-sm font-medium">
+                    {isPhone ? "Phone number" : "Email address"}
+                  </label>
+
+                  <div className="relative">
+                    {isPhone && (
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-sm text-muted-foreground">
+                        +92
+                      </div>
+                    )}
+
+                    <Input
+                      id="login-value"
+                      type={isPhone ? "tel" : "email"}
+                      inputMode={isPhone ? "tel" : "email"}
+                      autoComplete={isPhone ? "tel" : "email"}
+                      placeholder={isPhone ? "3XX XXXXXXX" : "you@example.com"}
+                      value={value}
+                      onChange={(event) => {
+                        setValue(event.target.value);
+                        setFormError("");
+                      }}
+                      className={isPhone ? "pl-12" : ""}
+                      aria-invalid={Boolean(displayError)}
+                    />
+                  </div>
+
+                  <p className="mt-2 text-xs leading-5 text-muted-foreground">
+                    {isPhone
+                      ? "We'll send a 6-digit OTP to your phone."
+                      : "We'll email you a secure link to log in instantly."}
+                  </p>
+
+                  {displayError && (
+                    <p className="mt-3 text-sm text-destructive" role="alert">
+                      {displayError}
+                    </p>
+                  )}
+                </div>
+
+                <Button
+                  type="button"
+                  className="mt-6 h-12 w-full rounded-xl"
+                  disabled={!value.trim() || loading}
+                  onClick={handleSubmit}
+                >
+                  {loading
+                    ? "Sending..."
+                    : isPhone
+                      ? "Send OTP"
+                      : "Send Magic Link"}
+                  {!loading && <ArrowRight className="size-4 ml-2" />}
+                </Button>
+
+                <div className="mt-6 flex items-center gap-3 text-xs text-muted-foreground">
+                  <div className="h-px flex-1 bg-border" />
+                  <span>Secure authentication</span>
+                  <div className="h-px flex-1 bg-border" />
+                </div>
+
+                <p className="mt-5 text-center text-xs leading-5 text-muted-foreground">
+                  By continuing, you agree to AgroBid&apos;s terms and privacy policy.
                 </p>
-              )}
-
-              {otpSent && (
-                <p className="mt-2 text-sm text-brand-600" role="status">
-                  OTP sent successfully. Check your {isPhone ? "phone" : "email"}.
-                </p>
-              )}
-            </div>
-
-            <Button
-              type="button"
-              className="mt-6 h-12 w-full rounded-xl"
-              disabled={!value.trim() || loading}
-              onClick={handleSendOtp}
-            >
-              {loading ? "Sending..." : "Send OTP"}
-              {!loading && <ArrowRight className="size-4" />}
-            </Button>
-
-            <div className="mt-6 flex items-center gap-3 text-xs text-muted-foreground">
-              <div className="h-px flex-1 bg-border" />
-              <span>Secure authentication</span>
-              <div className="h-px flex-1 bg-border" />
-            </div>
-
-            <p className="mt-5 text-center text-xs leading-5 text-muted-foreground">
-              By continuing, you agree to AgroBid&apos;s terms and privacy policy.
-            </p>
+              </>
+            )}
           </div>
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
@@ -266,5 +324,13 @@ export default function LoginPage() {
         </div>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <LoginForm />
+    </React.Suspense>
   );
 }
