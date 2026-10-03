@@ -71,7 +71,7 @@ export default async function DashboardPage() {
           </div>
 
           <Button className="mt-6 w-full rounded-xl justify-between" asChild>
-            <Link href="/dashboard">
+            <Link href="/dashboard/listings/create">
               <span>Create Listing</span>
               <ArrowUpRight className="size-4" />
             </Link>
@@ -95,7 +95,7 @@ export default async function DashboardPage() {
           </div>
 
           <Button variant="outline" className="mt-6 w-full rounded-xl justify-between" asChild>
-            <Link href="/dashboard">
+            <Link href="/dashboard/auctions">
               <span>View Auctions</span>
               <ArrowUpRight className="size-4" />
             </Link>
